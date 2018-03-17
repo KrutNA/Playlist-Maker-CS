@@ -7,7 +7,6 @@ namespace PlaylistMaker
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Program by KrutNA. Beta v0.2.2");
             Menu.DisplayHelp();
 
             do
@@ -16,9 +15,9 @@ namespace PlaylistMaker
                 do
                 {
                     Menu.DisplayMenu(ref playlist);
-                } while (!Menu.GetIsExit());
+                } while (!Menu.IsExit);
                 
-            } while (Menu.GetIsRestart());
+            } while (Menu.IsRestart);
         }
     }
 }

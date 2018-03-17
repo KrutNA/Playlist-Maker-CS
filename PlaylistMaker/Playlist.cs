@@ -18,36 +18,27 @@ namespace PlaylistMaker
             ".ra", ".alac"
         };
 
-        public List<Composition> Compositions;
-
-        private bool HasPlsExtension(string Path)
-        {
-            if (Path.ToLower().EndsWith(".pls"))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        // Calls with initialization of object of current class
+        private List<Composition> Compositions;
+        
         public Playlist()
         {
+            Compositions = new List<Composition>();
+
             // Making playlist file in the current directory
             Console.Write("Input playlist name: ");
-            if (String.IsNullOrWhiteSpace(Path = Console.ReadLine()))
+            Path = Console.ReadLine();
+
+            if (String.IsNullOrWhiteSpace(Path))
             {
                 ErrorHandler.DisplayError(3);
                 Path = Environment.CurrentDirectory + "\\Playlist.pls";
             }
             else
             {
-                if (HasPlsExtension(Path))
-                    Path = Environment.CurrentDirectory + "\\" + Path;
-                else
+                Path = HasPlsExtension(Path) ?
+                    Path = Environment.CurrentDirectory + "\\" + Path :
                     Path = Environment.CurrentDirectory + "\\" + Path + ".pls";
             }
-
-            Compositions = new List<Composition>();
 
             // Check
             if (!File.Exists(Path))
@@ -56,7 +47,6 @@ namespace PlaylistMaker
                 catch
                 {
                     ErrorHandler.DisplayError(2);
-                    return;
                 }
             }
             else
@@ -76,10 +66,15 @@ namespace PlaylistMaker
                 }
             }
         }
-        
-        private string GetName(string TempString)
+
+        private bool HasPlsExtension(string path)
         {
-            string[] tempArray = TempString.Split('=');
+            return path.ToLower().EndsWith(".pls");
+        }
+
+        private string GetName(string tempString)
+        {
+            string[] tempArray = tempString.Split('=');
             string[] newTempArray = new string[tempArray.Length - 1];
             for (int i = 1; i < tempArray.Length; i++)
             {
@@ -90,50 +85,65 @@ namespace PlaylistMaker
 
         private string Input()
         {
-            string input;
-            if (String.IsNullOrWhiteSpace(input = Console.ReadLine()))
+            string input = Console.ReadLine();
+            if (String.IsNullOrWhiteSpace(input))
             {
-                if (input == null)
+                if (String.IsNullOrEmpty(input))
                 {
                     ErrorHandler.DisplayError(31);
-                    return null;
                 }
                 else
                 {
                     ErrorHandler.DisplayError(32);
-                    return null;
                 }
+                return null;
             }
             return input;
         }
 
         public void AddComposition()
         {
-            string[] arguments = new string[3];
-            Console.Write("Input path to composition: ");
-            if ((arguments[0] = Input()) == null) return;
-            arguments[0] = arguments[0].Replace("\"", "");
+            string path;
+            string author;
+            string title;
 
-            if (arguments[0].ToLower().StartsWith("http")) { }
-            else if (!File.Exists(arguments[0]))
+            Console.Write("Input path to composition: ");
+            path = Input();
+            if (!String.IsNullOrEmpty(path))
+            {
+                return;
+            }
+            path = path.Replace("\"", "");
+
+            if (!File.Exists(path))
             {
                 ErrorHandler.DisplayError(11);
                 return;
             }
+            if (path.ToLower().StartsWith("http")) { }
 
             // Checks is file in a path an audio file
-            if (!validExtensions.Any(extension => arguments[0].ToLower().EndsWith(extension)))
+            if (!validExtensions.Any(extension => path.ToLower().EndsWith(extension)))
             {
                 ErrorHandler.DisplayError(13);
                 return;
             }
 
+
             Console.Write("Input composition's author: ");
-            if ((arguments[1] = Input()) == null) return;
+            author = Input();
+            if (String.IsNullOrEmpty(author))
+            {
+                return;
+            }
 
             Console.Write("Input composition's title: ");
-            if ((arguments[2] = Input()) == null) return;
-            Composition composition = new Composition(arguments[0], arguments[1], arguments[2]);
+            title = Input();
+            if (String.IsNullOrEmpty(title))
+            {
+                return;
+            }
+            Composition composition = new Composition(path, author, title);
 
             if (Compositions.Contains(composition))
             {
@@ -142,7 +152,6 @@ namespace PlaylistMaker
             }
 
             Compositions.Add(composition);
-            return;
         }
 
         public void DeleteCompsition()
@@ -153,14 +162,25 @@ namespace PlaylistMaker
             }
             else
             {
-                string[] arguments = new string[2];
+                string author;
+                string title;
                 Console.Write("Input composition's author: ");
-                if ((arguments[0] = Input()) == null) return;
+                author = Input();
+                if (String.IsNullOrEmpty(author))
+                {
+                    return;
+                }
 
                 Console.Write("Input composition's title: ");
-                if ((arguments[1] = Input()) == null) return;
+                title = Input();
+                if (String.IsNullOrEmpty(title))
+                {
+                    return;
+                }
 
-                Compositions.Remove(Compositions.Find(composition => (composition.Author.ToLower() == arguments[0].ToLower() && composition.Title.ToLower() == arguments[1].ToLower())));
+                Compositions.Remove(Compositions.Find(composition =>
+                    (composition.Author.ToLower() == author.ToLower() &&
+                    composition.Title.ToLower() == title.ToLower())));
             }
         }
 
@@ -172,26 +192,35 @@ namespace PlaylistMaker
             }
             else
             {
-                string[] arguments = new string[2];
+                string author;
+                string title;
 
                 Console.Write("Input composition's author: ");
-                arguments[0] = Console.ReadLine();
+                author = Console.ReadLine();
 
                 Console.Write("Input composition's title: ");
-                arguments[1] = Console.ReadLine();
+                title = Console.ReadLine();
 
-                if (String.IsNullOrWhiteSpace(arguments[0]) && String.IsNullOrWhiteSpace(arguments[1]))
+                if (String.IsNullOrWhiteSpace(author) && String.IsNullOrWhiteSpace(title))
                 {
                     ErrorHandler.DisplayError(34);
                     return;
                 }
 
-                if (String.IsNullOrWhiteSpace(arguments[0])) arguments[0] = "";
-                if (String.IsNullOrWhiteSpace(arguments[1])) arguments[1] = "";
+                if (String.IsNullOrWhiteSpace(author))
+                {
+                    author = "";
+                }
+                if (String.IsNullOrWhiteSpace(title))
+                {
+                    title = "";
+                }
 
-                List<Composition> compositions = Compositions.FindAll(composition => (composition.Author.ToLower().Contains(arguments[0].ToLower()) && composition.Title.ToLower().Contains(arguments[1].ToLower())));
+                List<Composition> compositions = Compositions.FindAll(composition =>
+                    (composition.Author.ToLower().Contains(author.ToLower()) &&
+                     composition.Title.ToLower().Contains(title.ToLower())));
 
-                if (compositions == null)
+                if (compositions.Count() == 0)
                 {
                     ErrorHandler.DisplayError(11);
                     return;
@@ -200,11 +229,11 @@ namespace PlaylistMaker
                 if (compositions.Count == 1)
                     Console.WriteLine("Founded 1 composition: ");
                 else
-                    Console.WriteLine("Founded " + compositions.Count.ToString() + " compositions");
+                    Console.WriteLine($"Founded {compositions.Count} compositions");
 
-                foreach (Composition composition in compositions)
+                for(int i = 0; i < compositions.Count(); i++)
                 {
-                    Console.WriteLine("\t" + composition.FullTitle);
+                    Console.WriteLine($"\t {compositions[i].FullTitle}");
                 }
             }
         }
@@ -218,11 +247,9 @@ namespace PlaylistMaker
             else
             {
                 Console.WriteLine("Compositions in current playlist: ");
-                int counter = 0;
-                foreach (Composition composition in Compositions)
+                for (int i = 0; i < Compositions.Count(); i++)
                 {
-                    counter++;
-                    Console.WriteLine("\t#" + counter.ToString() + ": " + composition.FullTitle);
+                    Console.WriteLine($"\t#{i+1}: {Compositions[i].FullTitle}");
                 }
             }
         }
@@ -235,15 +262,14 @@ namespace PlaylistMaker
             }
             else
             {
-                int counter = 0;
-                foreach (Composition composition in Compositions)
+                for (int i = 0; i < Compositions.Count(); i++)
                 {
-                    counter++;
-                    Console.WriteLine("Music #" + counter.ToString() + "\n" +
-                                       "\tAuthor: " + composition.Author + "\n" +
-                                       "\tTitle: " + composition.Title + "\n" +
-                                       "\tPath: " + composition.Path + "\n" +
-                                       "\tLength: " + composition.Length + "\n");
+                    Console.WriteLine(
+                        $"Music #{i + 1}\n" +
+                        $"\tAuthor: {Compositions[i].Author}\n" +
+                        $"\tTitle: {Compositions[i].Title}\n" +
+                        $"\tPath: {Compositions[i].Path}\n" +
+                        $"\tLength: {Compositions[i].Length}\n");
                 }
             }
         }
@@ -253,25 +279,24 @@ namespace PlaylistMaker
             if (Compositions == null)
             {
                 Console.WriteLine("Playlist now is clear!");
-                File.WriteAllText(Path, "[Playlist]\nNumberOfEntries=0\n");
-                Console.WriteLine("Playlist now is empty!\n" +
-                                  "Programm will closed in few seconds!\n" +
-                                  "Please wait!");
-                System.Threading.Thread.Sleep(5000);
+                File.WriteAllText(Path,
+                    "[Playlist]\nNumberOfEntries=0\n");
+                Console.WriteLine(
+                    "Playlist now is empty!\n" +
+                    "Programm will closed in few seconds!\n" +
+                    "Please wait!");
             }
             else
             {
-                File.WriteAllText(Path, "[Playlist]\nNumberOfEntries=" + Compositions.Count + "\n\n");
-                int counter = 0;
-                foreach (Composition composition in Compositions)
+                File.WriteAllText(Path, $"[Playlist]\nNumberOfEntries={Compositions.Count}\n\n");
+                for (int i = 0; i < Compositions.Count(); i++)
                 {
-                    counter++;
-                    string separator = counter.ToString() + "=";
+                    string separator = Convert.ToString(i + 1) + "=";
                     File.AppendAllText(Path,
-                            "File" + separator + composition.Path + "\n" +
-                            "Title" + separator + composition.FullTitle + "\n" +
-                            "Length" + separator + composition.Length + "\n" +
-                            "\n");
+                        $"File{separator}{Compositions[i].Path}\n" +
+                        $"Title{separator}{Compositions[i].FullTitle}\n" +
+                        $"Length{separator}{Compositions[i].Length}\n" +
+                        $"\n");
                 }
             }
         }

@@ -33,18 +33,20 @@ namespace PlaylistMaker
                   "Unknown error code!" },
             { 35, "Command not founded!" }
         };
-        
+
         public static void DisplayError(int ID)
         {
-            Console.WriteLine("Code error ID: " + ID);
-            if (errorDescription.ContainsKey(ID))
+            Console.WriteLine($"Code error ID: {ID}");
+            if (!errorDescription.ContainsKey(ID))
+            {
                 ID = 35;
+            }
 
             Console.WriteLine(errorDescription[ID]);
             
             if (ID < isBreakpoint)
             {
-                Menu.SeiIsExit(true);
+                Menu.IsExit = true;
                 System.Threading.Thread.Sleep(3000);
             }
         }

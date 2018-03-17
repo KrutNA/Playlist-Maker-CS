@@ -3,80 +3,98 @@ using System.Collections.Generic;
 
 namespace PlaylistMaker
 {
-    class Menu
+    public static class Menu
     {
-        private static bool isExit = false;
-        private static bool isRestart = false;
+        public static bool IsExit { get; set; } = false;
+        public static bool IsRestart { get; private set; } = false;
         private static bool isInit = false;
-        private delegate Playlist ExecuteMenuFunction(Playlist playlist);
-        private static readonly Dictionary<string, Delegate> menuItems = new Dictionary<string, Delegate>();
+        private delegate Playlist MenuFunctionCalling(Playlist playlist);
+        private static readonly Dictionary<string, Delegate> menuFunctions = new Dictionary<string, Delegate>();
 
-        private Menu() { }
-        
         public static void InitMenuItems()
         {
-            ExecuteMenuFunction help = delegate (Playlist playlist)
-            {
-                DisplayHelp();
-                return playlist;
-            };
-            ExecuteMenuFunction cls = delegate (Playlist playlist)
-            {
-                Console.Clear();
-                return playlist;
-            };
-            ExecuteMenuFunction list = delegate (Playlist playlist)
-            {
-                playlist.Display();
-                return playlist;
-            };
-            ExecuteMenuFunction search = delegate (Playlist playlist)
-            {
-                playlist.FindComposition();
-                return playlist;
-            };
-            ExecuteMenuFunction add = delegate (Playlist playlist)
-            {
-                playlist.AddComposition();
-                return playlist;
-            };
-            ExecuteMenuFunction del = delegate (Playlist playlist)
-            {
-                playlist.DeleteCompsition();
-                return playlist;
-            };
-            ExecuteMenuFunction save = delegate (Playlist playlist)
-            {
-                playlist.Save();
-                return playlist;
-            };
-            ExecuteMenuFunction quit = delegate (Playlist playlist)
-            {
-                Quit(ref playlist);
-                return playlist;
-            };
-            ExecuteMenuFunction fsc = delegate (Playlist playlist)
-            {
-                playlist.DisplayAll();
-                return playlist;
+            MenuFunctionCalling CommmandHelpCalling;
+            menuFunctions.Add("help",
+                CommmandHelpCalling = playlist =>
+                {
+                    DisplayHelp();
+                    return playlist;
+                }
+            );
 
-            };
-            ExecuteMenuFunction restart = delegate (Playlist playlist)
-            {
-                Restart(ref playlist);
-                return playlist;
-            };
+            MenuFunctionCalling ConsoleClearing;
+            menuFunctions.Add("cls",
+                ConsoleClearing = playlist =>
+                {
+                    Console.Clear();
+                    return playlist;
+                }
+            );
 
-            menuItems.Add("help", help);
-            menuItems.Add("cls", cls);
-            menuItems.Add("list", list);
-            menuItems.Add("search", search);
-            menuItems.Add("add", add);
-            menuItems.Add("del", del);
-            menuItems.Add("save", save);
-            menuItems.Add("quit", quit);
-            menuItems.Add("fsc", fsc);
-            menuItems.Add("restart", restart);
+            MenuFunctionCalling DisplayPlaylistCalling;
+            menuFunctions.Add("list", DisplayPlaylistCalling = playlist =>
+                {
+                    playlist.Display();
+                    return playlist;
+                }
+            );
+
+            MenuFunctionCalling SearchMethodCalling;
+            menuFunctions.Add("search", SearchMethodCalling = playlist =>
+                {
+                    playlist.FindComposition();
+                    return playlist;
+                }
+            );
+
+            MenuFunctionCalling AdditionCompositionCalling;
+            menuFunctions.Add("add", AdditionCompositionCalling = playlist =>
+                {
+                    playlist.AddComposition();
+                    return playlist;
+                }
+            );
+
+            MenuFunctionCalling DeleteCompositionCalling;
+            menuFunctions.Add("del", DeleteCompositionCalling = playlist =>
+                {
+                    playlist.DeleteCompsition();
+                    return playlist;
+                }
+            );
+
+            MenuFunctionCalling SavePlaylistCalling;
+            menuFunctions.Add("save", SavePlaylistCalling = playlist =>
+                {
+                    playlist.Save();
+                    return playlist;
+                }
+            );
+
+            MenuFunctionCalling QuitMethodCalling;
+            menuFunctions.Add("quit", QuitMethodCalling = playlist =>
+                {
+                    Quit(ref playlist);
+                    return playlist;
+                }
+            );
+
+            MenuFunctionCalling SpecialDisplayPlaylistCalling;
+            menuFunctions.Add("fsc", SpecialDisplayPlaylistCalling = playlist =>
+                {
+                    playlist.DisplayAll();
+                    return playlist;
+
+                }
+            );
+
+            MenuFunctionCalling RestartMethodCalling;
+            menuFunctions.Add("restart", RestartMethodCalling = playlist =>
+                {
+                    Restart(ref playlist);
+                    return playlist;
+                }
+            );
 
             isInit = true;
         }
@@ -84,12 +102,12 @@ namespace PlaylistMaker
         private static void Quit(ref Playlist playlist)
         {
             playlist.Save();
-            isExit = true;
+            IsExit = true;
         }
 
         private static void Restart(ref Playlist playlist)
         {
-            isRestart = true;
+            IsRestart = true;
             Quit(ref playlist);
         }
 
@@ -106,32 +124,17 @@ namespace PlaylistMaker
                               "\t\"restart\" - to save and open new file\n");
         }
 
-        public static bool GetIsExit()
-        {
-            return isExit;
-        }
-
-        public static void SeiIsExit(bool newIsExit)
-        {
-            isExit = newIsExit; 
-        }
-
-        public static bool GetIsRestart()
-        {
-            return isRestart;
-        }
-
         private static bool IsInvalidInput(string input)
         {
             bool IsInvalid = false;
             if (String.IsNullOrEmpty(input))
             {
-                ErrorHandler.DisplayError(31);
+                Console.WriteLine("Input is empty!");
                 IsInvalid = true;
             }
             else if (String.IsNullOrWhiteSpace(input))
             {
-                ErrorHandler.DisplayError(32);
+                Console.WriteLine("Whitespace input!");
                 IsInvalid = true;
             }
             return IsInvalid;
@@ -139,24 +142,28 @@ namespace PlaylistMaker
 
         public static void DisplayMenu( ref Playlist playlist )
         {
-            Console.Write("> ");
+            string command;
             bool isReturn = false;
+            IsRestart = false;
+            IsExit = false;
 
-            string command = Console.ReadLine().ToLower();
+            Console.Write("> ");
+            command = Console.ReadLine().ToLower();
 
             isReturn = IsInvalidInput(command);
 
             if (!isInit)
+            {
                 InitMenuItems();
+            }
 
-            if (!menuItems.ContainsKey(command))
+            if (!menuFunctions.ContainsKey(command))
             {
                 ErrorHandler.DisplayError(35);
             }
-            else if (isReturn) { }
-            else
+            else if (!isReturn)
             {
-                playlist = (Playlist)menuItems[command].DynamicInvoke(playlist);
+                playlist = (Playlist)menuFunctions[command].DynamicInvoke(playlist);
             }
         }
     }
