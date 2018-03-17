@@ -10,11 +10,13 @@ namespace PlaylistMaker
         public string Path { get; private set; }
 
         // Most of popular audio formats
-        private IReadOnlyList<string> validExtensions = new List<string> { ".aac", ".ac3", ".aif", ".amr", ".opus", ".mp1",
-                                                                           ".ape", ".asf", ".awb", ".cdr", ".flac", ".mp2",
-                                                                           ".m4a", ".m4b", ".mid", ".mod", ".midi", ".mp3",
-                                                                           ".aob", ".ogg", ".wma", ".wav", ".wave", ".mp4",
-                                                                           ".ra", ".alac"};
+        private IReadOnlyList<string> validExtensions = new List<string> {
+            ".aac", ".ac3", ".aif", ".amr", ".opus", ".mp1",
+            ".ape", ".asf", ".awb", ".cdr", ".flac", ".mp2",
+            ".m4a", ".m4b", ".mid", ".mod", ".midi", ".mp3",
+            ".aob", ".ogg", ".wma", ".wav", ".wave", ".mp4",
+            ".ra", ".alac"
+        };
 
         public List<Composition> Compositions;
 
@@ -105,7 +107,7 @@ namespace PlaylistMaker
             return input;
         }
 
-        public void Add()
+        public void AddComposition()
         {
             string[] arguments = new string[3];
             Console.Write("Input path to composition: ");
@@ -143,7 +145,7 @@ namespace PlaylistMaker
             return;
         }
 
-        public void Delete()
+        public void DeleteCompsition()
         {
             if (Compositions.Count() == 0)
             {
@@ -162,7 +164,7 @@ namespace PlaylistMaker
             }
         }
 
-        public void Find()
+        public void FindComposition()
         {
             if (Compositions.Count() == 0)
             {
@@ -207,7 +209,7 @@ namespace PlaylistMaker
             }
         }
 
-        public void Print()
+        public void Display()
         {
             if (Compositions.Count() == 0)
             {
@@ -225,7 +227,7 @@ namespace PlaylistMaker
             }
         }
 
-        public void PrintAll()
+        public void DisplayAll()
         {
             if (Compositions.Count() == 0)
             {

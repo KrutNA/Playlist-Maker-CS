@@ -5,21 +5,19 @@ namespace PlaylistMaker
 {
     class Menu
     {
-        private static bool IsExit = false;
-        private static bool IsRestart = false;
-        
-        private Menu() { }
-
+        private static bool isExit = false;
+        private static bool isRestart = false;
+        private static bool isInit = false;
         private delegate Playlist ExecuteMenuFunction(Playlist playlist);
-        private static bool IsInit = false;
+        private static readonly Dictionary<string, Delegate> menuItems = new Dictionary<string, Delegate>();
 
-        private static readonly Dictionary<string, Delegate> MenuItems = new Dictionary<string, Delegate>();
-
+        private Menu() { }
+        
         public static void InitMenuItems()
         {
             ExecuteMenuFunction help = delegate (Playlist playlist)
             {
-                GetHelp();
+                DisplayHelp();
                 return playlist;
             };
             ExecuteMenuFunction cls = delegate (Playlist playlist)
@@ -29,22 +27,22 @@ namespace PlaylistMaker
             };
             ExecuteMenuFunction list = delegate (Playlist playlist)
             {
-                playlist.Print();
+                playlist.Display();
                 return playlist;
             };
             ExecuteMenuFunction search = delegate (Playlist playlist)
             {
-                playlist.Find();
+                playlist.FindComposition();
                 return playlist;
             };
             ExecuteMenuFunction add = delegate (Playlist playlist)
             {
-                playlist.Add();
+                playlist.AddComposition();
                 return playlist;
             };
             ExecuteMenuFunction del = delegate (Playlist playlist)
             {
-                playlist.Delete();
+                playlist.DeleteCompsition();
                 return playlist;
             };
             ExecuteMenuFunction save = delegate (Playlist playlist)
@@ -59,7 +57,7 @@ namespace PlaylistMaker
             };
             ExecuteMenuFunction fsc = delegate (Playlist playlist)
             {
-                playlist.PrintAll();
+                playlist.DisplayAll();
                 return playlist;
 
             };
@@ -69,35 +67,33 @@ namespace PlaylistMaker
                 return playlist;
             };
 
-            MenuItems.Add("help", help);
-            MenuItems.Add("cls", cls);
-            MenuItems.Add("list", list);
-            MenuItems.Add("search", search);
-            MenuItems.Add("add", add);
-            MenuItems.Add("del", del);
-            MenuItems.Add("save", save);
-            MenuItems.Add("quit", quit);
-            MenuItems.Add("fsc", fsc);
-            MenuItems.Add("restart", restart);
+            menuItems.Add("help", help);
+            menuItems.Add("cls", cls);
+            menuItems.Add("list", list);
+            menuItems.Add("search", search);
+            menuItems.Add("add", add);
+            menuItems.Add("del", del);
+            menuItems.Add("save", save);
+            menuItems.Add("quit", quit);
+            menuItems.Add("fsc", fsc);
+            menuItems.Add("restart", restart);
 
-            IsInit = true;
+            isInit = true;
         }
 
         private static void Quit(ref Playlist playlist)
         {
             playlist.Save();
-            IsExit = true;
-            return;
+            isExit = true;
         }
 
         private static void Restart(ref Playlist playlist)
         {
-            IsRestart = true;
+            isRestart = true;
             Quit(ref playlist);
-            return;
         }
 
-        public static void GetHelp()
+        public static void DisplayHelp()
         {
             Console.WriteLine("Usage:\n" +
                               "\t\"help\"   - to call this message\n" +
@@ -112,15 +108,20 @@ namespace PlaylistMaker
 
         public static bool GetIsExit()
         {
-            return IsExit;
+            return isExit;
+        }
+
+        public static void SeiIsExit(bool newIsExit)
+        {
+            isExit = newIsExit; 
         }
 
         public static bool GetIsRestart()
         {
-            return IsRestart;
+            return isRestart;
         }
 
-        private static bool IsInvalidkInput(string input)
+        private static bool IsInvalidInput(string input)
         {
             bool IsInvalid = false;
             if (String.IsNullOrEmpty(input))
@@ -139,22 +140,23 @@ namespace PlaylistMaker
         public static void DisplayMenu( ref Playlist playlist )
         {
             Console.Write("> ");
-            bool IsReturn = false;
+            bool isReturn = false;
 
             string command = Console.ReadLine().ToLower();
 
-            IsReturn = IsInvalidkInput(command);
+            isReturn = IsInvalidInput(command);
 
-            if (!IsInit)
+            if (!isInit)
                 InitMenuItems();
 
-            if (!MenuItems.ContainsKey(command) || IsReturn)
+            if (!menuItems.ContainsKey(command))
             {
                 ErrorHandler.DisplayError(35);
             }
+            else if (isReturn) { }
             else
             {
-                playlist = (Playlist) MenuItems[command].DynamicInvoke(playlist);
+                playlist = (Playlist)menuItems[command].DynamicInvoke(playlist);
             }
         }
     }

@@ -7,7 +7,7 @@ namespace PlaylistMaker
     {
         private ErrorHandler() { }
 
-        private const int IsBreakpoint = 10;
+        private const int isBreakpoint = 10;
 
         private static readonly IReadOnlyDictionary<int, string> errorDescription = new Dictionary<int, string>
         {
@@ -33,8 +33,7 @@ namespace PlaylistMaker
                   "Unknown error code!" },
             { 35, "Command not founded!" }
         };
-
-
+        
         public static void DisplayError(int ID)
         {
             Console.WriteLine("Code error ID: " + ID);
@@ -43,9 +42,9 @@ namespace PlaylistMaker
 
             Console.WriteLine(errorDescription[ID]);
             
-            if (ID < IsBreakpoint)
+            if (ID < isBreakpoint)
             {
-                Program.isExit = true;
+                Menu.SeiIsExit(true);
                 System.Threading.Thread.Sleep(3000);
             }
         }

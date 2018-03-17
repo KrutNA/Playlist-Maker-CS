@@ -22,21 +22,21 @@ namespace PlaylistMaker
         public string Length { get; private set; } = "-1";
 
         // Create object then writing
-        public Composition(string Path, string Author, string Title)
+        public Composition(string path, string author, string title)
         {
-            FullTitle = Author + "  -  " + Title;
-            this.Author = Author;
-            this.Path = Path;
-            this.Title = Title;
+            FullTitle = author + "  -  " + title;
+            this.Author = author;
+            this.Path = path;
+            this.Title = title;
         }
 
         // Create object then reading
-        public Composition(string Path, string FullTitle)
+        public Composition(string path, string fullTitle)
         {
-            this.FullTitle = FullTitle;
-            this.Author = Regex.Split(FullTitle, "  -  ")[0];
-            this.Title = Regex.Split(FullTitle, "  -  ")[1];
-            this.Path = Path;
+            this.FullTitle = fullTitle;
+            this.Author = Regex.Split(fullTitle, "  -  ")[0];
+            this.Title = Regex.Split(fullTitle, "  -  ")[1];
+            this.Path = path;
         }
     }
 }
