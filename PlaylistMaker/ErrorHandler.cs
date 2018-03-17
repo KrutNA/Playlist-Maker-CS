@@ -22,6 +22,7 @@ namespace PlaylistMaker
             { 11, "Composition not found!" },
             { 12, "Composition is already added!" },
             { 13, "The entered file is not an audio file!" },
+            { 14, "Playlist is empty!" },
 
             // Input errors
             { 31, "Inpus is empty!" },
@@ -38,7 +39,7 @@ namespace PlaylistMaker
         {
             Console.WriteLine("Code error ID: " + ID);
             if (errorDescription.ContainsKey(ID))
-                ID = 34;
+                ID = 35;
 
             Console.WriteLine(errorDescription[ID]);
             

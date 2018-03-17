@@ -22,7 +22,7 @@ namespace PlaylistMaker
                 Playlist playlist = new Playlist();
                 do
                 {
-                    Menu.DisplayMenu(playlist);
+                    Menu.DisplayMenu(ref playlist);
                 } while (!Menu.GetIsExit());
                 
             } while (Menu.GetIsRestart());

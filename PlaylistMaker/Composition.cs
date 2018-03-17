@@ -24,7 +24,7 @@ namespace PlaylistMaker
         // Create object then writing
         public Composition(string Path, string Author, string Title)
         {
-            FullTitle = Author + "\t-\t" + Title;
+            FullTitle = Author + "  -  " + Title;
             this.Author = Author;
             this.Path = Path;
             this.Title = Title;
@@ -34,8 +34,8 @@ namespace PlaylistMaker
         public Composition(string Path, string FullTitle)
         {
             this.FullTitle = FullTitle;
-            this.Author = Regex.Split(FullTitle, "\t-\t")[0];
-            this.Title = Regex.Split(FullTitle, "\t-\t")[1];
+            this.Author = Regex.Split(FullTitle, "  -  ")[0];
+            this.Title = Regex.Split(FullTitle, "  -  ")[1];
             this.Path = Path;
         }
     }

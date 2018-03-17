@@ -74,7 +74,7 @@ namespace PlaylistMaker
                 }
             }
         }
-
+        
         private string GetName(string TempString)
         {
             string[] tempArray = TempString.Split('=');
@@ -126,7 +126,6 @@ namespace PlaylistMaker
                 return;
             }
 
-
             Console.Write("Input composition's author: ");
             if ((arguments[1] = Input()) == null) return;
 
@@ -146,77 +145,104 @@ namespace PlaylistMaker
 
         public void Delete()
         {
-            string[] arguments = new string[2];
-            Console.Write("Input composition's author: ");
-            if ((arguments[0] = Input()) == null) return;
+            if (Compositions.Count() == 0)
+            {
+                ErrorHandler.DisplayError(14);
+            }
+            else
+            {
+                string[] arguments = new string[2];
+                Console.Write("Input composition's author: ");
+                if ((arguments[0] = Input()) == null) return;
 
-            Console.Write("Input composition's title: ");
-            if ((arguments[1] = Input()) == null) return;
+                Console.Write("Input composition's title: ");
+                if ((arguments[1] = Input()) == null) return;
 
-            Compositions.Remove(Compositions.Find(composition => (composition.Author.ToLower() == arguments[0].ToLower() && composition.Title.ToLower() == arguments[1].ToLower())));
+                Compositions.Remove(Compositions.Find(composition => (composition.Author.ToLower() == arguments[0].ToLower() && composition.Title.ToLower() == arguments[1].ToLower())));
+            }
         }
 
         public void Find()
         {
-            string[] arguments = new string[2];
-
-            Console.Write("Input composition's author: ");
-            arguments[0] = Console.ReadLine();
-
-            Console.Write("Input composition's title: ");
-            arguments[1] = Console.ReadLine();
-
-            if (String.IsNullOrWhiteSpace(arguments[0]) && String.IsNullOrWhiteSpace(arguments[1]))
+            if (Compositions.Count() == 0)
             {
-                ErrorHandler.DisplayError(34);
-                return;
+                ErrorHandler.DisplayError(14);
             }
-
-            if (String.IsNullOrWhiteSpace(arguments[0])) arguments[0] = "";
-            if (String.IsNullOrWhiteSpace(arguments[1])) arguments[1] = "";
-
-            List<Composition> compositions = Compositions.FindAll(composition => (composition.Author.ToLower().Contains(arguments[0].ToLower()) && composition.Title.ToLower().Contains(arguments[1].ToLower())));
-
-            if (compositions == null)
-            {
-                ErrorHandler.DisplayError(11);
-                return;
-            }
-
-            if (compositions.Count == 1)
-                Console.WriteLine("Founded 1 composition: ");
             else
-                Console.WriteLine("Founded " + compositions.Count.ToString() + " compositions");
-
-            foreach (Composition composition in compositions)
             {
-                Console.WriteLine("\t" + composition.FullTitle);
-            }
+                string[] arguments = new string[2];
 
+                Console.Write("Input composition's author: ");
+                arguments[0] = Console.ReadLine();
+
+                Console.Write("Input composition's title: ");
+                arguments[1] = Console.ReadLine();
+
+                if (String.IsNullOrWhiteSpace(arguments[0]) && String.IsNullOrWhiteSpace(arguments[1]))
+                {
+                    ErrorHandler.DisplayError(34);
+                    return;
+                }
+
+                if (String.IsNullOrWhiteSpace(arguments[0])) arguments[0] = "";
+                if (String.IsNullOrWhiteSpace(arguments[1])) arguments[1] = "";
+
+                List<Composition> compositions = Compositions.FindAll(composition => (composition.Author.ToLower().Contains(arguments[0].ToLower()) && composition.Title.ToLower().Contains(arguments[1].ToLower())));
+
+                if (compositions == null)
+                {
+                    ErrorHandler.DisplayError(11);
+                    return;
+                }
+
+                if (compositions.Count == 1)
+                    Console.WriteLine("Founded 1 composition: ");
+                else
+                    Console.WriteLine("Founded " + compositions.Count.ToString() + " compositions");
+
+                foreach (Composition composition in compositions)
+                {
+                    Console.WriteLine("\t" + composition.FullTitle);
+                }
+            }
         }
 
         public void Print()
         {
-            Console.WriteLine("Compositions in current playlist: ");
-            int counter = 0;
-            foreach (Composition composition in Compositions)
+            if (Compositions.Count() == 0)
             {
-                counter++;
-                Console.WriteLine("\t#" + counter.ToString() + ": " + composition.FullTitle);
+                ErrorHandler.DisplayError(14);
+            }
+            else
+            {
+                Console.WriteLine("Compositions in current playlist: ");
+                int counter = 0;
+                foreach (Composition composition in Compositions)
+                {
+                    counter++;
+                    Console.WriteLine("\t#" + counter.ToString() + ": " + composition.FullTitle);
+                }
             }
         }
 
         public void PrintAll()
         {
-            int counter = 0;
-            foreach (Composition composition in Compositions)
+            if (Compositions.Count() == 0)
             {
-                counter++;
-                Console.WriteLine("Music #" + counter.ToString() + "\n" +
-                                   "\tAuthor: " + composition.Author + "\n" +
-                                   "\tTitle: " + composition.Title + "\n" +
-                                   "\tPath: " + composition.Path + "\n" +
-                                   "\tLength: " + composition.Length + "\n");
+                ErrorHandler.DisplayError(14);
+            }
+            else
+            {
+                int counter = 0;
+                foreach (Composition composition in Compositions)
+                {
+                    counter++;
+                    Console.WriteLine("Music #" + counter.ToString() + "\n" +
+                                       "\tAuthor: " + composition.Author + "\n" +
+                                       "\tTitle: " + composition.Title + "\n" +
+                                       "\tPath: " + composition.Path + "\n" +
+                                       "\tLength: " + composition.Length + "\n");
+                }
             }
         }
 
@@ -226,7 +252,7 @@ namespace PlaylistMaker
             {
                 Console.WriteLine("Playlist now is clear!");
                 File.WriteAllText(Path, "[Playlist]\nNumberOfEntries=0\n");
-                Console.WriteLine("Playlist now is clear!\n" +
+                Console.WriteLine("Playlist now is empty!\n" +
                                   "Programm will closed in few seconds!\n" +
                                   "Please wait!");
                 System.Threading.Thread.Sleep(5000);
