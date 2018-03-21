@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -35,11 +36,12 @@ namespace PlaylistMaker
             }
             else
             {
-                Path = HasPlsExtension(Path) ?
-                    Path = Environment.CurrentDirectory + "\\" + Path :
-                    Path = Environment.CurrentDirectory + "\\" + Path + ".pls";
+                Path = Environment.CurrentDirectory + "\\" + Path;
+                if (HasPlsExtension(Path))
+                {
+                    Path = Path + ".pls";
+                }
             }
-
             // Check
             if (!File.Exists(Path))
             {
@@ -61,10 +63,40 @@ namespace PlaylistMaker
                 }
                 for (int i = 3; i < plsArray.Length; i += 4)
                 {
-                    Composition composition = new Composition(GetName(plsArray[i]), GetName(plsArray[i + 1]));
+                    var composition = new Composition(GetName(plsArray[i]), GetName(plsArray[i + 1]));
                     Compositions.Add(composition);
                 }
             }
+        }
+
+        private bool URLExists(string url)
+        {
+            var result = false;
+
+            var webRequest = WebRequest.Create(url);
+            webRequest.Timeout = 1200;
+            webRequest.Method = "HEAD";
+
+            HttpWebResponse response = null;
+
+            try
+            {
+                response = (HttpWebResponse)webRequest.GetResponse();
+                result = true;
+            }
+            catch (WebException webException)
+            {
+                Console.WriteLine($"{url} doesn't exist: {webException.Message}");
+            }
+            finally
+            {
+                if (response != null)
+                {
+                    response.Close();
+                }
+            }
+
+            return result;
         }
 
         private bool HasPlsExtension(string path)
@@ -74,8 +106,8 @@ namespace PlaylistMaker
 
         private string GetName(string tempString)
         {
-            string[] tempArray = tempString.Split('=');
-            string[] newTempArray = new string[tempArray.Length - 1];
+            var tempArray = tempString.Split('=');
+            var newTempArray = new string[tempArray.Length - 1];
             for (int i = 1; i < tempArray.Length; i++)
             {
                 newTempArray[i - 1] = tempArray[i];
@@ -85,7 +117,7 @@ namespace PlaylistMaker
 
         private string Input()
         {
-            string input = Console.ReadLine();
+            var input = Console.ReadLine();
             if (String.IsNullOrWhiteSpace(input))
             {
                 if (String.IsNullOrEmpty(input))
@@ -114,13 +146,13 @@ namespace PlaylistMaker
                 return;
             }
             path = path.Replace("\"", "");
-
-            if (!File.Exists(path))
+            
+            if (path.ToLower().StartsWith("http") && URLExists(path)) { }
+            else if (!File.Exists(path))
             {
                 ErrorHandler.DisplayError(11);
                 return;
             }
-            if (path.ToLower().StartsWith("http")) { }
 
             // Checks is file in a path an audio file
             if (!validExtensions.Any(extension => path.ToLower().EndsWith(extension)))
@@ -128,8 +160,7 @@ namespace PlaylistMaker
                 ErrorHandler.DisplayError(13);
                 return;
             }
-
-
+            
             Console.Write("Input composition's author: ");
             author = Input();
             if (String.IsNullOrEmpty(author))
@@ -206,7 +237,7 @@ namespace PlaylistMaker
                     ErrorHandler.DisplayError(34);
                     return;
                 }
-
+                
                 if (String.IsNullOrWhiteSpace(author))
                 {
                     author = "";
@@ -216,13 +247,13 @@ namespace PlaylistMaker
                     title = "";
                 }
 
-                List<Composition> compositions = Compositions.FindAll(composition =>
+                var compositions = Compositions.FindAll(composition =>
                     (composition.Author.ToLower().Contains(author.ToLower()) &&
                      composition.Title.ToLower().Contains(title.ToLower())));
 
                 if (compositions.Count() == 0)
                 {
-                    ErrorHandler.DisplayError(11);
+                    Console.WriteLine("Composition not found!");
                     return;
                 }
 
@@ -231,7 +262,7 @@ namespace PlaylistMaker
                 else
                     Console.WriteLine($"Founded {compositions.Count} compositions");
 
-                for(int i = 0; i < compositions.Count(); i++)
+                for (int i = 0; i < compositions.Count(); i++)
                 {
                     Console.WriteLine($"\t {compositions[i].FullTitle}");
                 }
@@ -265,11 +296,7 @@ namespace PlaylistMaker
                 for (int i = 0; i < Compositions.Count(); i++)
                 {
                     Console.WriteLine(
-                        $"Music #{i + 1}\n" +
-                        $"\tAuthor: {Compositions[i].Author}\n" +
-                        $"\tTitle: {Compositions[i].Title}\n" +
-                        $"\tPath: {Compositions[i].Path}\n" +
-                        $"\tLength: {Compositions[i].Length}\n");
+                        $"Music #{i + 1}\n\tAuthor: {Compositions[i].Author}\n\tTitle: {Compositions[i].Title}\n\tPath: {Compositions[i].Path}\n\tLength: {Compositions[i].Length}\n");
                 }
             }
         }
@@ -282,9 +309,7 @@ namespace PlaylistMaker
                 File.WriteAllText(Path,
                     "[Playlist]\nNumberOfEntries=0\n");
                 Console.WriteLine(
-                    "Playlist now is empty!\n" +
-                    "Programm will closed in few seconds!\n" +
-                    "Please wait!");
+                    "Playlist now is empty!\nProgramm will closed in few seconds!\nPlease wait!");
             }
             else
             {
@@ -293,10 +318,7 @@ namespace PlaylistMaker
                 {
                     string separator = Convert.ToString(i + 1) + "=";
                     File.AppendAllText(Path,
-                        $"File{separator}{Compositions[i].Path}\n" +
-                        $"Title{separator}{Compositions[i].FullTitle}\n" +
-                        $"Length{separator}{Compositions[i].Length}\n" +
-                        $"\n");
+                        $"File{separator}{Compositions[i].Path}\nTitle{separator}{Compositions[i].FullTitle}\nLength{separator}{Compositions[i].Length}\n\n");
                 }
             }
         }

@@ -113,20 +113,16 @@ namespace PlaylistMaker
 
         public static void DisplayHelp()
         {
-            Console.WriteLine("Usage:\n" +
-                              "\t\"help\"   - to call this message\n" +
-                              "\t\"cls\"    - to clear console\n" +
-                              "\t\"list\"   - to display all items of catalog\n" +
-                              "\t\"search\" - to go find ites in catalog\n" +
-                              "\t\"add\"    - to add new item\n" +
-                              "\t\"del\"    - to remove some item from list\n" +
-                              "\t\"quit\"   - to save and exit\n" +
-                              "\t\"restart\" - to save and open new file\n");
+            Console.WriteLine("Usage:");
+            Console.WriteLine("\t\"help\"   - to call this message\n\t\"cls\"    - to clear console");
+            Console.WriteLine("\t\"list\"   - to display all items of catalog\n\t\"search\" - to go find ites in catalog");
+            Console.WriteLine("\t\"add\"    - to add new item\n\t\"del\"    - to remove some item from list");
+            Console.WriteLine("\t\"quit\"   - to save and exit\n\t\"restart\" - to save and open new file\n");
         }
 
         private static bool IsInvalidInput(string input)
         {
-            bool IsInvalid = false;
+            var IsInvalid = false;
             if (String.IsNullOrEmpty(input))
             {
                 Console.WriteLine("Input is empty!");
@@ -143,7 +139,7 @@ namespace PlaylistMaker
         public static void DisplayMenu( ref Playlist playlist )
         {
             string command;
-            bool isReturn = false;
+            var isReturn = false;
             IsRestart = false;
             IsExit = false;
 

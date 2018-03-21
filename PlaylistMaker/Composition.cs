@@ -24,7 +24,7 @@ namespace PlaylistMaker
         // Create object then writing
         public Composition(string path, string author, string title)
         {
-            FullTitle = author + "  -  " + title;
+            this.FullTitle = author + "  -  " + title;
             this.Author = author;
             this.Path = path;
             this.Title = title;
