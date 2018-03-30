@@ -5,19 +5,22 @@ namespace PlaylistMaker
 {
     class Program
     {
+        static bool IsExit = false;
         static void Main(string[] args)
         {
-            Menu.DisplayHelp();
+            var menu = new Menu();
+            menu.DisplayHelp();
 
             do
             {
                 Playlist playlist = new Playlist();
                 do
                 {
-                    Menu.DisplayMenu(ref playlist);
-                } while (!Menu.IsExit);
-                
-            } while (Menu.IsRestart);
+                    menu.DisplayMenu(ref playlist);
+                }
+                while (!menu.IsExit || !IsExit);    
+            }
+            while (menu.IsRestart);
         }
     }
 }

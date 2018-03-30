@@ -3,15 +3,17 @@ using System.Collections.Generic;
 
 namespace PlaylistMaker
 {
-    public static class Menu
+    public class Menu
     {
-        public static bool IsExit { get; set; } = false;
-        public static bool IsRestart { get; private set; } = false;
-        private static bool isInit = false;
+        public bool IsExit { get; set; } = false;
+        public bool IsRestart { get; private set; } = false;
+        private bool isInit = false;
         private delegate Playlist MenuFunctionCalling(Playlist playlist);
-        private static readonly Dictionary<string, Delegate> menuFunctions = new Dictionary<string, Delegate>();
+        private Dictionary<string, Delegate> menuFunctions = new Dictionary<string, Delegate>();
 
-        public static void InitMenuItems()
+        public Menu() { }
+
+        public void InitMenuItems()
         {
             MenuFunctionCalling CommmandHelpCalling;
             menuFunctions.Add("help",
@@ -99,19 +101,19 @@ namespace PlaylistMaker
             isInit = true;
         }
 
-        private static void Quit(ref Playlist playlist)
+        private void Quit(ref Playlist playlist)
         {
             playlist.Save();
-            IsExit = true;
+            this.IsExit = true;
         }
 
-        private static void Restart(ref Playlist playlist)
+        private void Restart(ref Playlist playlist)
         {
             IsRestart = true;
             Quit(ref playlist);
         }
 
-        public static void DisplayHelp()
+        public void DisplayHelp()
         {
             Console.WriteLine("Usage:");
             Console.WriteLine("\t\"help\"   - to call this message\n\t\"cls\"    - to clear console");
@@ -120,7 +122,7 @@ namespace PlaylistMaker
             Console.WriteLine("\t\"quit\"   - to save and exit\n\t\"restart\" - to save and open new file\n");
         }
 
-        private static bool IsInvalidInput(string input)
+        private bool IsInvalidInput(string input)
         {
             var IsInvalid = false;
             if (String.IsNullOrEmpty(input))
@@ -136,7 +138,7 @@ namespace PlaylistMaker
             return IsInvalid;
         }
 
-        public static void DisplayMenu( ref Playlist playlist )
+        public void DisplayMenu( ref Playlist playlist )
         {
             string command;
             var isReturn = false;

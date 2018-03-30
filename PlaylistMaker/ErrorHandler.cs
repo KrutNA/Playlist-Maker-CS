@@ -9,6 +9,8 @@ namespace PlaylistMaker
 
         private const int isBreakpoint = 10;
 
+        public static bool IsExit = false; 
+
         private static readonly IReadOnlyDictionary<int, string> errorDescription = new Dictionary<int, string>
         {
             // Errors with file: creating, reading, rewriting
@@ -46,7 +48,7 @@ namespace PlaylistMaker
             
             if (ID < isBreakpoint)
             {
-                Menu.IsExit = true;
+                IsExit = true;
                 System.Threading.Thread.Sleep(3000);
             }
         }
